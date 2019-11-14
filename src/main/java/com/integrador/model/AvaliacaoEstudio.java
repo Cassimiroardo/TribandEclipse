@@ -1,22 +1,36 @@
 package com.integrador.model;
 
 import java.sql.Date;
-
+@Tabela(nome="avaliacao_estudio")
 public class AvaliacaoEstudio extends EntidadeBase {
-
+	
+	@Atributo(nome="atendimento",tipo=Integer.class)
 	private Integer atendimento;
+	
+	@Atributo(nome="compromisso_horario",tipo=Integer.class)
 	private Integer compromissoHorario;
+
+	@Atributo(nome="data_avaliacao_estudio",tipo=Date.class)
 	private Date dataAvaliacaoEstudio;
+
+	@ChaveEstrangeira
+	@Atributo(nome="id_estudio",tipo=Estudio.class)
 	private Estudio estudio;
+
+	@ChavePrimaria
+	@Atributo(nome="id_avaliacao_estudio",tipo=Long.class)
 	private Long idAvaliacaoEstudio;
+
+	@Atributo(nome="limpeza",tipo=Integer.class)
 	private Integer limpeza;
+
+	@Atributo(nome="qualidade_equipamento",tipo=Integer.class)
 	private Integer qualidadeEquipamento;
 
 	
 	public AvaliacaoEstudio() {
 		super();
-		this.nomeTabela = "avaliacao_estudio";
-		this.numeroAtributosTabela = 7;
+
 	}
 
 	
@@ -24,7 +38,7 @@ public class AvaliacaoEstudio extends EntidadeBase {
 
 	public AvaliacaoEstudio(Integer atendimento, Integer compromissoHorario, Date dataAvaliacaoEstudio, Estudio estudio,
 			Long idAvaliacaoEstudio, Integer limpeza, Integer qualidadeEquipamento) {
-		this();
+		super();
 		this.atendimento = atendimento;
 		this.compromissoHorario = compromissoHorario;
 		this.dataAvaliacaoEstudio = dataAvaliacaoEstudio;

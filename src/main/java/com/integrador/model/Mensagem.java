@@ -1,25 +1,34 @@
 package com.integrador.model;
 
 import java.sql.Time;
-
+@Tabela(nome="mensagem")
 public class Mensagem extends EntidadeBase {
 //para atualizaçções futuras o sistema de mensagens sera melhorado
 
+	@ChaveEstrangeira
+	@Atributo(nome="id_chat",tipo=Chat.class)
 	private Chat chat;
+
+	@Atributo(nome="horario",tipo=Time.class)
 	private Time horario;
+
+	@ChavePrimaria
+	@Atributo(nome="id_mensagem",tipo=Long.class)
 	private Long idMensagem;
+	
+	@Atributo(nome="conteudo",tipo=String.class)
 	private String conteudo;
 
 	public Mensagem() {
 		super();
 
-		nomeTabela = "mensagem";
-		numeroAtributosTabela = 4;
 	}
 
 
 	public Mensagem(Chat chat, Time horario, Long idMensagem, String conteudo) {
-		this();
+
+		super();
+
 		this.chat = chat;
 		this.horario = horario;
 		this.idMensagem = idMensagem;

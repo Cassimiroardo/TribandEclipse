@@ -1,22 +1,30 @@
 package com.integrador.model;
 
 import java.util.ArrayList;
-
+@Tabela(nome="servico")
 public class Servico extends EntidadeBase {
 
+	@Atributo(nome="descricao",tipo=String.class)
 	private String descricao;
+
+	@ChaveEstrangeira
+	@Atributo(nome="id_estudio",tipo=Estudio.class)
 	private Estudio estudio;
+
+	@ChavePrimaria
+	@Atributo(nome="id_servico",tipo=Long.class)
 	private Long idServico;
+	
 	private ArrayList<SubServico> subServicos;
 
 	public Servico() {
 		super();
 
-		nomeTabela = "servico";
-		numeroAtributosTabela = 3;
 	}
 	public Servico(Long idServico, String descricao, Estudio estudio, ArrayList<SubServico> subServicos) {
-		this();
+
+		super();
+
 		this.idServico = idServico;
 		this.descricao = descricao;
 		this.estudio = estudio;

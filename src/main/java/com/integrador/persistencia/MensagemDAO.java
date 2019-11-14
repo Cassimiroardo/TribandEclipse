@@ -12,7 +12,7 @@ public class MensagemDAO extends GenericoDAO<Mensagem>{
 		// TODO Auto-generated constructor stub
 	}
 	public List<Mensagem> buscaPorChat(Chat chat){
-		return buscaPorAtributo("chat",chat);
+		return buscaPorAtributoUsandoId("chat",chat);
 	}
 
 }

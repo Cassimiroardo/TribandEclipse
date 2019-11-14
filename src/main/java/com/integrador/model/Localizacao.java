@@ -1,20 +1,38 @@
 package com.integrador.model;
-
+@Tabela(nome="localizacao")
 public class Localizacao extends EntidadeBase {
 
+	@Atributo(nome="bairro",tipo=String.class)
 	private String bairro;
+	
+	@Atributo(nome="cep",tipo=Long.class)
 	private Long cep;
+	
+	@Atributo(nome="cidade",tipo=String.class)
 	private String cidade;
+
+	@Atributo(nome="estado",tipo=String.class)
 	private String estado;
+
+	@ChavePrimaria
+	@Atributo(nome="id_localizacao",tipo=Long.class)
 	private Long idLocalizacao;
+	
+	@Atributo(nome="latitude",tipo=Double.class)
 	private Double latitude;
+	
+	@Atributo(nome="longitude",tipo=Double.class)
 	private Double longitude;
+	
+	@Atributo(nome="numero",tipo=Integer.class)
 	private Integer numero;
+
+	@Atributo(nome="rua",tipo=String.class)
 	private String rua;
 	
 	public Localizacao(Long idLocalizacao, Long cep, String estado, String cidade, String bairro, String rua,
 			Integer numero, Double latitude, Double longitude) {
-		this();
+		super();
 		this.idLocalizacao = idLocalizacao;
 		this.cep = cep;
 		this.estado = estado;
@@ -30,8 +48,6 @@ public class Localizacao extends EntidadeBase {
 	public Localizacao(){
 		super();
 
-		nomeTabela = "localizacao";
-		numeroAtributosTabela = 9;
 	}
 	
 	@Override

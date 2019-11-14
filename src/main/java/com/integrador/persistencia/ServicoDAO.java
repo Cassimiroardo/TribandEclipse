@@ -12,6 +12,6 @@ public class ServicoDAO extends GenericoDAO<Servico>{
 		// TODO Auto-generated constructor stub
 	}
 	public List<Servico> buscaPorEstudio(Estudio estudio){
-		return buscaPorAtributo("estudio",estudio);
+		return buscaPorAtributoUsandoId("estudio",estudio);
 	}
 }

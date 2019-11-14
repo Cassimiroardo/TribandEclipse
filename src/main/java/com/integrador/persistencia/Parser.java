@@ -1,14 +1,13 @@
 package com.integrador.persistencia;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
-import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredField;
-import org.springframework.data.util.Pair;
-
+import com.integrador.model.ChaveEstrangeira;
+import com.integrador.model.ChavePrimaria;
 import com.integrador.model.EntidadeBase;
+import com.integrador.model.Tabela;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Parser<T extends EntidadeBase> {
 	T auxiliar;
@@ -16,39 +15,14 @@ public class Parser<T extends EntidadeBase> {
 		auxiliar = obj;
 	}
 
-	public boolean ehChaveEstrangeira(Field w) {
-	//	System.out.println(w.getType());
-		return EntidadeBase.class.isAssignableFrom(w.getType());
+	public boolean ehChaveEstrangeira(Field atributo) {
+		return atributo.isAnnotationPresent(ChaveEstrangeira.class);
 	}
-
-	// Retorna o nome do atributo no banco e se é uma chave estrangeira
-	private String geraNome(String w) {
-		String ans = "";
-		char[] nomeAtributo = w.toCharArray();
-		for (char k : nomeAtributo) {
-			if (Character.isUpperCase(k))
-				ans += "_";
-			ans += Character.toLowerCase(k);
-		}
-		return ans;
+	public boolean ehChavePrimaria(Field atributo) {
+		return atributo.isAnnotationPresent(ChavePrimaria.class);
 	}
-	public String geraNome(Field w) {
-		String resposta = null;
-		
-		
-		if (List.class.isAssignableFrom(w.getType())) {
-			return resposta;
-		}
+	
 
-		resposta = "";
-
-		if (ehChaveEstrangeira(w)) {
-			resposta += "id_"+geraNome(w.getType().getSimpleName().toLowerCase());
-		} else {
-			resposta += geraNome(w.getName());
-		}
-		return resposta;
-	}
 
 	public Object geraObjeto(Field w, Object q) {
 	
@@ -76,15 +50,17 @@ public class Parser<T extends EntidadeBase> {
 	}
 
 
-	public String geraInnerJoin(T aux) throws IllegalArgumentException, IllegalAccessException {
+	public String geraInnerJoin(Class<T> aux) throws IllegalArgumentException, IllegalAccessException {
 		String ans = "";
-		Field atributos[] = aux.getClass().getDeclaredFields();
+		Field atributos[] = aux.getDeclaredFields();
+		String nomeTabelaAux = aux.getAnnotation(Tabela.class).nome();
 		for(Field w: atributos) {
 			w.setAccessible(true);
+			
 			if(ehChaveEstrangeira(w)) {
-				String nome = geraNome(w).substring(3); // Como é chave estrangeira começa com id_****; 
+				String nome = w.getType().getAnnotation(Tabela.class).nome(); // Pega o valor nome da anotação Tabela da classe W; 
 				
-				ans +=  " INNER JOIN "+nome+" ON "+nome+".id_"+nome+"="+aux.getNomeTabela()+".id_"+nome; 
+				ans +=  " INNER JOIN "+nome+" ON "+nome+".id_"+nome+"="+nomeTabelaAux+".id_"+nome; 
 				
 			}
 		}
@@ -92,19 +68,7 @@ public class Parser<T extends EntidadeBase> {
 		return ans;
 	}
 
-	public String[] geraNomeAtributos(Field[] atributos, int tamanhoClasse) {
-		int idx = 0;
-		String nomes[] = new String[tamanhoClasse];
-		int tamanho = atributos.length;
-		for(int i=0;i<tamanho;i++) {
-			atributos[i].setAccessible(true);       // necessario para podermos pegar o valor do atributo
-			String ans = geraNome(atributos[i]);
-			nomes[idx++] = ans;
-		}	
-		
-		// TODO Auto-generated method stub
-		return nomes;
-	}
+	
 	
 	public Field geraAtributo(String nome) {
 		try {
@@ -120,4 +84,31 @@ public class Parser<T extends EntidadeBase> {
 		}
 		return null;
 	}
+	
+	public<S> S geraObjetodeClasse(Class<S> classe){
+		try {
+			return classe.getConstructor().newInstance();
+			
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

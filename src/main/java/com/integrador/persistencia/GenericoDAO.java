@@ -1,49 +1,43 @@
 package com.integrador.persistencia;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
+//Atualizar o Model com CHavePrimaria e Chave EStrangeira
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.util.Pair;
 
+import com.integrador.model.Atributo;
+import com.integrador.model.ChavePrimaria;
 import com.integrador.model.EntidadeBase;
+import com.integrador.model.Tabela;
 
 public abstract class GenericoDAO<T extends EntidadeBase> {
 
 	private ConexaoMysql conexao;
 	private Field atributos[];
-	protected T object;
-	private String[] nomeAtributosTabela;
-	private Object[] valorAtributosTabela;
+	protected Class<T> classeT;
 	private String nomeTabela;
-	private int numeroAtributosTabela;
 	private int numeroAtributosClasse;
 	protected Parser<T> parser;
 
+	@SuppressWarnings("unchecked")
 	public GenericoDAO(T auxiliar) {
 		super();
 		this.conexao = new ConexaoMysql("localhost", "3306", "root", "BDcasa123", "triband");
 		atributos = auxiliar.getClass().getDeclaredFields();
-
-		nomeTabela = auxiliar.getNomeTabela();
-		numeroAtributosTabela = auxiliar.getNumeroAtributosTabela();
 		numeroAtributosClasse = atributos.length;
-		object = auxiliar;
-		parser = new Parser<T>(auxiliar);
 
-		valorAtributosTabela = new Object[numeroAtributosClasse];
-		nomeAtributosTabela = parser.geraNomeAtributos(atributos, numeroAtributosClasse);
+		for (int i = 0; i < numeroAtributosClasse; i++) {
+			atributos[i].setAccessible(true);
+		}
+
+		nomeTabela = auxiliar.getClass().getAnnotation(Tabela.class).nome();
+		classeT = (Class<T>) auxiliar.getClass();
+		parser = new Parser<T>(auxiliar);
 
 	}
 
@@ -70,43 +64,40 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 	public T salvar(T t) {
 		this.conexao.abrirConexao();
 
+		ArrayList<Object> valores = new ArrayList<Object>();
 		String sqlInsertPart1 = "(";
-		String sqlInsertPart2 = "(?";
-
-		for (int i = 1; i <= numeroAtributosClasse; i++) {
-			if (nomeAtributosTabela[i - 1] == null) {
-				valorAtributosTabela[i - 1] = null;
+		String sqlInsertPart2 = "(";
+		boolean virgula1 = false;
+		for (int i = 0; i < numeroAtributosClasse; i++) {
+			if (!atributos[i].isAnnotationPresent(Atributo.class)) {
 				continue;
 			}
-			sqlInsertPart1 += nomeAtributosTabela[i - 1];
 
-			// System.out.println(nomeAtributosTabela[i-1]+" ->
-			// "+valorAtributosTabela[i-1]);
-			// System.out.println(atributos[idx].getName()+" "+atributos[idx].getType());
-			valorAtributosTabela[i - 1] = parser.geraObjeto(atributos[i - 1], t);
-
-			if (i < numeroAtributosTabela)
+			if (virgula1) {
 				sqlInsertPart1 += ",";
+				sqlInsertPart2 += ",";
+			}
+			sqlInsertPart1 += atributos[i].getAnnotation(Atributo.class).nome();
+			sqlInsertPart2 += "?";
 
-			if (i > 1)
-				sqlInsertPart2 += ",?";
+			virgula1 = true;
+
+			valores.add(parser.geraObjeto(atributos[i], t));
+
 		}
 		// adiciona os "?" na query de acordo com o numero de atributos
 
 		String sqlInsert = "INSERT INTO " + nomeTabela + sqlInsertPart1 + ") VALUES" + sqlInsertPart2 + ");";
-
+		System.out.println(sqlInsert);
 		try {
 			PreparedStatement statement = (PreparedStatement) this.conexao.getConexao().prepareStatement(sqlInsert,
 					PreparedStatement.RETURN_GENERATED_KEYS);
 
-			for (int i = 1; i <= numeroAtributosClasse; i++) {
-				if (nomeAtributosTabela[i - 1] == null)
-					continue;
-
-				statement = adicionaAtributo(statement, valorAtributosTabela[i - 1], i);
-
+			int tamanhoTabela = valores.size();
+			for (int i = 1; i <= tamanhoTabela; i++) {
+				statement = adicionaAtributo(statement, valores.get(i - 1), i);
 			}
-			System.out.println(sqlInsert);
+
 			statement.executeUpdate();
 			ResultSet rs = statement.getGeneratedKeys();
 
@@ -114,6 +105,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 				t.setId(rs.getLong(1));
 
 		} catch (SQLException e) {
+			t = null;
 			e.printStackTrace();
 		} finally {
 			this.conexao.fecharConexao();
@@ -127,7 +119,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 		boolean resposta = false;
 
 		String sqlDelete = "DELETE FROM " + nomeTabela + " WHERE id_" + nomeTabela + "=?;";
-
+		System.out.println(sqlDelete);
 		try {
 			PreparedStatement statement = (PreparedStatement) this.conexao.getConexao().prepareStatement(sqlDelete);
 
@@ -146,48 +138,60 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 	}
 
 	public T editar(T novo) {
+		
+		
+		
+		
+		
 		this.conexao.abrirConexao();
-		String sqlUpdate1 = "UPDATE " + novo.getNomeTabela() + " SET ";
-		String sqlUpdate2 = " WHERE id_" + novo.getNomeTabela() + "=?";
+		String sqlUpdate1 = "UPDATE " + nomeTabela + " SET ";
+		String sqlUpdate2 = " WHERE id_" + nomeTabela + "=?";
 		boolean virgula = false;
 
 		int idChavePrimaria = 0;
 
+		ArrayList<Object> valores = new ArrayList<Object>();
 		for (int i = 0; i < numeroAtributosClasse; i++) {
-			if (nomeAtributosTabela[i] == null) {
-				valorAtributosTabela[i] = null;
+		
+			
+			if (!atributos[i].isAnnotationPresent(Atributo.class))
 				continue;
-			}
-			valorAtributosTabela[i] = parser.geraObjeto(atributos[i], novo);
-			if (nomeAtributosTabela[i].equals("id_" + novo.getNomeTabela())) {
-				idChavePrimaria = i;
-				continue;
-			}
 
+			valores.add(parser.geraObjeto(atributos[i], novo));
+
+			if (atributos[i].isAnnotationPresent(ChavePrimaria.class)) {
+				idChavePrimaria = valores.size()-1;
+				continue;
+			}
 			if (virgula)
 				sqlUpdate1 += ", ";
 
-			sqlUpdate1 += nomeAtributosTabela[i];
+			sqlUpdate1 += atributos[i].getAnnotation(Atributo.class).nome();
 			sqlUpdate1 += "=?";
 
 			virgula = true;
 		}
 		sqlUpdate2 += " ;";
 		String sqlUpdate = sqlUpdate1 + sqlUpdate2;
+
+		System.out.println(sqlUpdate);
 		try {
 			PreparedStatement statement = (PreparedStatement) this.conexao.getConexao().prepareStatement(sqlUpdate);
-
 			int idx = 1;
-			for (int i = 0; i < numeroAtributosClasse; i++) {
-				if (nomeAtributosTabela[i] == null)
-					continue;
-				int id = idx;
+			for (int i = 0; i < valores.size(); i++) {
+
+				Object valor = valores.get(i);
 				if (i == idChavePrimaria) {
-					id = numeroAtributosTabela;
-					idx--;
+
+					int indiceChaveNaQuery = valores.size();
+
+					statement = adicionaAtributo(statement, valor, indiceChaveNaQuery);
+
+					continue;
 				}
-				statement = adicionaAtributo(statement, valorAtributosTabela[i], id);
-				idx++;
+
+				statement = adicionaAtributo(statement, valor, idx++);
+
 			}
 
 			statement.executeUpdate();
@@ -195,6 +199,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			novo = null;
 		} finally {
 			this.conexao.fecharConexao();
 		}
@@ -202,22 +207,22 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 		return novo;
 	}
 
-	protected List<T> busca(String query, Object valor) { // metodo de auxilio para pesquisar com somente um valor na
-															// query;
+	protected List<T> busca(String query, Object valor) {
+		// metodo de auxilio para pesquisar com somente um valor na query;
 		Object valores[] = { valor };
 		return busca(query, valores);
 	}
 
 	protected List<T> busca(String query, Object valorEspecifico[]) {
 		this.conexao.abrirConexao();
-
-		if (valorEspecifico.length == 0)
-			query = "";
+		if (valorEspecifico != null)
+			if (valorEspecifico.length == 0)
+				query = "";
 
 		ArrayList<T> resultado = new ArrayList<T>();
 
 		try {
-			String sqlSelect = "SELECT * FROM " + nomeTabela + " " + parser.geraInnerJoin(object) + " " + query + ";";
+			String sqlSelect = "SELECT * FROM " + nomeTabela + " " + parser.geraInnerJoin(classeT) + " " + query + ";";
 			// parser.geraInnerJoin() gera inner join caso a tabela possua chaves
 			// estrangeiras;
 
@@ -225,105 +230,92 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 			// valores que você precisar botar dentro da query
 			// você coloca no vetor "valorEspecifico", na ordem em que devem ser adicionados
 			// na query;
+			System.out.println(sqlSelect);
 
 			PreparedStatement statement = (PreparedStatement) this.conexao.getConexao().prepareStatement(sqlSelect);
-			System.out.println(sqlSelect);
 			if (query.length() > 0) {
 				int tam = valorEspecifico.length;
 				for (int i = 0; i < tam; i++) {
-					System.out.println(valorEspecifico[i]);
 					statement = adicionaAtributo(statement, valorEspecifico[i], i + 1);
 				}
 			} // valores são adicionados na query, se for necessario
 
 			ResultSet rs = statement.executeQuery();
 
-			Constructor<T> construtor = (Constructor<T>) object.getClass().getConstructor(null);
 			// construtor do tipo da busca, para criar novos objetos da classe;
 
 			while (rs.next()) {
 
-				T novo = construtor.newInstance();
+				T novo = parser.geraObjetodeClasse(classeT);
 
 				for (int idx = 0; idx < numeroAtributosClasse; idx++) { // anda pelos atributos da classe
 
-					if (nomeAtributosTabela[idx] == null)
+					if (!atributos[idx].isAnnotationPresent(Atributo.class))
 						continue; // Passa pelos atributos da classe que não estão na tabela
 
-					Object valor = rs.getObject(nomeAtributosTabela[idx]);
+					String nomeDoAtributo = atributos[idx].getAnnotation(Atributo.class).nome();
+					Object valor = rs.getObject(nomeDoAtributo);
 					// caso o atributo esteja na tabela, você pega o nome dele na tabela e obtem o
 					// valor do registro relacionado com esse atributo
 
 					if (parser.ehChaveEstrangeira(atributos[idx])) {
 
-						Class<?> tipoFilho = atributos[idx].getType();
-
-						Constructor<EntidadeBase> construtorFilho = (Constructor<EntidadeBase>) tipoFilho
-								.getConstructor(null);
-
 						// caso seja chave estrangeira um objeto deste tipo é criado, para isso é
 						// necessario o construtor deste objeto;
-
-						Object filho = construtorFilho.newInstance();
+						Class<?> tipoFilho = atributos[idx].getAnnotation(Atributo.class).tipo();
 
 						Field[] atributosFilho = tipoFilho.getDeclaredFields();
 
-						EntidadeBase filhoAux = (EntidadeBase) tipoFilho.getConstructor(null).newInstance(null);
-
-						int tamanhoClasseFilho = atributosFilho.length;
-
-						String[] nomesAtributosFilho = parser.geraNomeAtributos(atributosFilho, tamanhoClasseFilho);
+						EntidadeBase filhoAux = (EntidadeBase) parser.geraObjetodeClasse(tipoFilho);
 
 						// um objeto do tipoFilho é criado e os seus atributos são setados;
-						for (int i = 0; i < tamanhoClasseFilho; i++) {
-							if (nomesAtributosFilho[i] == null)
+						for (Field atributoFilho : atributosFilho) {
+							atributoFilho.setAccessible(true);
+							if (!atributoFilho.isAnnotationPresent(Atributo.class))
 								continue; // pula os atributos da classe que não estão na tabela
 
-							Object valorAtriFilho = rs.getObject(nomesAtributosFilho[i]);
+							String nomeAtributo = atributoFilho.getAnnotation(Atributo.class).nome();
 
-							if (parser.ehChaveEstrangeira(atributosFilho[i])) { // se o filho for uma chave estrangeira,
-																				// somente o id é guardado;
-								EntidadeBase objAtriFilho = (EntidadeBase) atributosFilho[i].getType()
-										.getConstructor(null).newInstance();
-								objAtriFilho.setId((Long) valorAtriFilho);
-								valorAtriFilho = objAtriFilho;
+							Object valorAtributoFilho = rs.getObject(nomeAtributo);
+
+							if (parser.ehChaveEstrangeira(atributoFilho)) { // se o filho for uma chave estrangeira,
+																			// somente o id é guardado;
+								Class<?> tipoAtributoFilho = atributoFilho.getAnnotation(Atributo.class).tipo();
+								EntidadeBase objAtriFilho = (EntidadeBase) parser.geraObjetodeClasse(tipoAtributoFilho);
+								objAtriFilho.setId((Long) valorAtributoFilho);
+								// O id é setado no objeto
+								valorAtributoFilho = objAtriFilho;
+								// valor se torna o objeto
 							}
 
-							atributosFilho[i].set(filho, valorAtriFilho); // seta o valor do atributo[i] no objeto
-																			// Filho;
+							atributoFilho.set(filhoAux, valorAtributoFilho); // seta o valor do atributo[i] no objeto
+																				// Filho;
 						}
 
-						valor = filho;
+						valor = filhoAux;
 					}
 
 					atributos[idx].set(novo, valor); // seta o valor do atributo[idx] no objeto novo;
-
 				}
-
 				resultado.add(novo); // adiciona novo na lista de resposta;
 
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			resultado = null;
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			resultado = null;
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			resultado = null;
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			resultado = null;
 		} finally {
 			this.conexao.fecharConexao();
 		}
@@ -331,24 +323,32 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 		return resultado;
 	}
 
-	protected T buscaUm(String field, Object valor) {
-		List<T> ans = buscaPorAtributo(field, valor);
+	public List<T> buscarTodos() {
+		return busca("", null);
+	}
+	
+	
+	protected T buscaUmPorAtributoUsandoSeusAtributos(String field, Object valor) {
+		List<T> ans = buscaPorAtributoUsandoSeusAtributos(field, valor);
 		if (ans.size() == 1)
 			return ans.get(0);
 		return null;
 	}
-
+	protected T buscaUmPorAtributosUsandoSeusAtributos(String[] fields, Object[] valores) {
+		List<T> ans = buscaPorAtributosUsandoSeusAtributos(fields, valores);
+		if(ans.size()==1)
+			return ans.get(0);
+		return null;
+	}
+	
 	public T buscarPorId(Long id) {
-		String nome = object.getClass().getSimpleName();
-		return buscaUm("id" + nome, id);
+		String nome = classeT.getSimpleName();
+		return buscaUmPorAtributoUsandoSeusAtributos("id" + nome, id);
 	}
 
-	public List<T> buscarTodos() {
-		return busca("", null);
-	}
 
-	protected List<T> buscaPorAtributos(String fields[], Object valores[]) {
-		String query = " WHERE ";
+	protected List<T> buscaPorAtributosUsandoSeusAtributos(String fields[], Object valores[]) {
+		String query = "";
 		ArrayList<Object> valoresQuery = new ArrayList<Object>();
 		try {
 			for (int i = 0; i < fields.length; i++) {
@@ -361,55 +361,70 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		query = " WHERE "+ query;
+		
 		return busca(query, valoresQuery.toArray());
 	}
 
-	protected List<T> buscaPorAtributo(String field, Object valor) {
+	protected List<T> buscaPorAtributoUsandoSeusAtributos(String field, Object valor) {
 		String fields[] = { field };
 		Object valores[] = { valor };
-		return buscaPorAtributos(fields, valores);
+		return buscaPorAtributosUsandoSeusAtributos(fields, valores);
 	}
 
+	
+	protected List<T> buscaPorAtributoUsandoId(String field, Object valor){
+		Class<?> classe = parser.geraAtributo(field).getType();
+		String nomeDaTabela = classe.getAnnotation(Tabela.class).nome();
+		String nomeAtributoId = nomeDaTabela+".id_"+nomeDaTabela;
+		
+		Long id = ((EntidadeBase)valor).getId();
+		System.out.println(nomeAtributoId +" -> "+id);
+		return busca(" WHERE "+nomeAtributoId +"=?",id);
+	}
+	
 	protected Pair<String, List<Object>> geraQuery(String nome, Object valor, String query, List<Object> valoresQuery) {
 		try {
-			Field atributo = parser.geraAtributo(nome);
+			Field atributoQuery = parser.geraAtributo(nome);
+
 			ArrayList<Object> valores;
 			if (valoresQuery == null)
 				valores = new ArrayList<Object>();
 			else
 				valores = (ArrayList<Object>) valoresQuery;
+
 			
-			if (parser.ehChaveEstrangeira(atributo)) {
-				Field atributosValor[] = atributo.getType().getDeclaredFields();
-				int tam = atributosValor.length;
+			
+			if (parser.ehChaveEstrangeira(atributoQuery)) {
+				Field atributosDaQuery[] = atributoQuery.getType().getDeclaredFields();
 
-				String nomeAtributos[] = parser.geraNomeAtributos(atributosValor, tam);
+				ArrayList<String> nomeDosAtributos = new ArrayList<String>();
 
-				for (int j = 0; j < tam; j++) {
-					System.out.println(nomeAtributos[j]+" 1");
-					if (nomeAtributos[j] == null)
-						continue;
-
-					System.out.println(nomeAtributos[j]+" 2");
-					if (nomeAtributos[j].startsWith("id_")) {
-						nomeAtributos[j] = null;
+				for (Field atributo : atributosDaQuery) {
+					if (!atributo.isAnnotationPresent(Atributo.class)) {
+						atributo = null;
 						continue;
 					}
 
-					System.out.println(nomeAtributos[j]+" 3");
-					Object valorAtributo = atributosValor[j].get(valor);
+					if (parser.ehChavePrimaria(atributo) || parser.ehChaveEstrangeira(atributo)) {
+						atributo = null;
+						continue;
+					}
+
+					Object valorAtributo = atributo.get(valor);
 					if (valorAtributo == null) {
-						nomeAtributos[j] = null;
+						atributo = null;
 						continue;
 					}
-
-					System.out.println(nomeAtributos[j]+" 4 FOI");
-
+					nomeDosAtributos.add(atributo.getAnnotation(Atributo.class).nome());
 					valores.add(valorAtributo);
 				}
-				query += geraQuery(nomeAtributos) + " ";
+				if(query.length()>0) query+=" AND ";
+				query += geraQuery((String[]) nomeDosAtributos.toArray()) + " ";
 			} else {
-				query += geraQuery(parser.geraNome(atributo)) + " ";
+
+				if(query.length()>0) query+=" AND ";
+				query += geraQuery(atributoQuery.getAnnotation(Atributo.class).nome()) + " ";
 				valores.add(valor);
 			}
 			return Pair.of(query, valores);

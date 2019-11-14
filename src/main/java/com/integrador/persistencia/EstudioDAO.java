@@ -19,10 +19,15 @@ public class EstudioDAO extends GenericoDAO<Estudio> {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Estudio buscarPorEmail(String email) {
-		return buscaUm("email", email);
+	public List<Estudio> buscaPorNome(String nome){
+		return buscaPorAtributoUsandoSeusAtributos("nome", nome);
 	}
-
+	public Estudio buscarPorEmail(String email) {
+		return buscaUmPorAtributoUsandoSeusAtributos("email", email);
+	}
+	public Estudio buscaPorEmailESenha(String email, String senha) {
+		return buscaUmPorAtributosUsandoSeusAtributos(new String[] {"email", "senha"}, new Object[] { email,senha} );
+	}
 	public List<Estudio> buscarPorProximidade(Double latitude, Double longitude, Double raio) {
 		return busca(
 				"WHERE distancia(?,?,localizacao.latitude,localizacao.longitude)<=? ORDER BY distancia(?,?,localizacao.latitude,localizacao.longitude)",
@@ -30,7 +35,7 @@ public class EstudioDAO extends GenericoDAO<Estudio> {
 	}
 
 	public List<Estudio> buscaPorLocalizacao(Localizacao localizacao) {
-		return buscaPorAtributo("localizacao", localizacao);
+		return buscaPorAtributoUsandoSeusAtributos("localizacao", localizacao);
 	}
 
 	public List<Estudio> buscaPorPreco(Double preco) {
@@ -38,35 +43,61 @@ public class EstudioDAO extends GenericoDAO<Estudio> {
 	}
 
 	public List<Estudio> buscaPorHorarioDisponivel(Time inicio, Time fim) {
-		return null;
+		return busca(" WHERE estudio.id_estudio NOT IN ("
+				+    " 	SELECT estudio.id_estudio FROM estudio INNER JOIN reserva ON estudio.id_estudio=reserva.id_estudio"
+				+ 	 "  WHERE horario_inicio>=? AND horario_final<=?)",
+				new Object[] {inicio,fim});
 	}
 
 	public List<Estudio> buscaPorProximidadeLocalizacaoPrecoHorarioDisponivel(Double latitude, Double longitude,
 			Double raio, Localizacao localizacao, Double preco, Time inicio, Time fim, int ordenacao) {
 
 		String queryProximidade = "distancia(?,?,localizacao.latitude,localizacao.longitude)<=?";
+		
 		ArrayList<Object> valorProximidade = new ArrayList<Object>();
 		valorProximidade.add(latitude);
 		valorProximidade.add(longitude);
 		valorProximidade.add(raio);
 
-		Pair<String, List<Object>> queryLocalizacaoPair = 
-				(localizacao != null
-				?
-				geraQuery("localizacao", localizacao, "", null)
-				: 
-				Pair.of("", new ArrayList<Object>()));
+		
+		
+		Pair<String, List<Object>> queryLocalizacaoPair = null;
+		if(localizacao!=null) queryLocalizacaoPair = geraQuery("localizacao", localizacao, "", null);
+		else queryLocalizacaoPair = Pair.of("", new ArrayList<Object>());
 
 		String queryLocalizacao = queryLocalizacaoPair.getFirst();
+		
 		ArrayList<Object> valorLocalizacao = (ArrayList<Object>) queryLocalizacaoPair.getSecond();
+		
+		
+		
+		
 		String queryPreco = "estudio.preco<=?";
 		ArrayList<Object> valorPreco = new ArrayList<Object>();
 		valorPreco.add(preco);
-		String queryHorarioDisponivel = "";
+		
+		
+		
+		
+		
+		
+		
+		String queryHorarioDisponivel = " WHERE estudio.id_estudio NOT IN ("
+								   +    " 	SELECT estudio.id_estudio FROM estudio INNER JOIN reserva ON estudio.id_estudio=reserva.id_estudio"
+								   + 	"   WHERE horario_inicio>=? AND horario_final<=?)";
+		
+		
+		
 		ArrayList<Object> valorHorarioDisponivel = new ArrayList<Object>();
 		valorHorarioDisponivel.add(inicio);
 		valorHorarioDisponivel.add(fim);
 
+		
+		
+		
+		// Junta Querys Disponiveis
+		
+		
 		String querys[] = { queryProximidade, queryLocalizacao, queryPreco, queryHorarioDisponivel };
 		ArrayList<ArrayList<Object>> valorQuerys = new ArrayList<ArrayList<Object>>();
 		// java não possui arrayList<Object> [], então temos que usar um

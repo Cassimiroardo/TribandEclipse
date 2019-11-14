@@ -12,7 +12,7 @@ public class SubServicoDAO extends GenericoDAO<SubServico>{
 		// TODO Auto-generated constructor stub
 	}
 	public List<SubServico> buscaPorServico(Servico servico){
-		return buscaPorAtributo("servico", servico);
+		return buscaPorAtributoUsandoId("servico", servico);
 	}
 
 }

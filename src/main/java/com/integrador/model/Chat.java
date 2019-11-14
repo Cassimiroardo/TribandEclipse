@@ -1,15 +1,25 @@
 package com.integrador.model;
 
 import java.util.ArrayList;
-
+@Tabela(nome="chat")
 public class Chat extends EntidadeBase{
 
+	@ChaveEstrangeira
+	@Atributo(nome="id_banda",tipo=Banda.class)
 	private Banda banda;
+	
+	@ChaveEstrangeira
+	@Atributo(nome="id_estudio",tipo=Estudio.class)
 	private Estudio estudio;
+
+	@ChavePrimaria
+	@Atributo(nome="id_chat",tipo=Long.class)
 	private Long idChat;
+	
 	private ArrayList<Mensagem> mensagens;
+	
 	public Chat(Long idChat, Banda banda, Estudio estudio, ArrayList<Mensagem> mensagens) {
-		this();
+		super();
 		this.idChat = idChat;
 		this.banda = banda;
 		this.estudio = estudio;
@@ -20,8 +30,6 @@ public class Chat extends EntidadeBase{
 	public Chat() {
 		super();
 
-		nomeTabela = "chat";
-		numeroAtributosTabela = 3;
 	}
 
 	@Override

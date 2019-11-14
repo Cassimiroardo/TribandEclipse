@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ifsul.sapucaia</groupId>
-	<artifactId>lp3_rest_movies</artifactId>
+	<artifactId>triband</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>lp3_rest_movies</name>
+	<name>triband</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
