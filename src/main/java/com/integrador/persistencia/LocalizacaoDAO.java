@@ -1,6 +1,7 @@
 package com.integrador.persistencia;
 
-import com.integrador.model.Localizacao;
+import com.integrador.model.classes.Localizacao;
+import com.integrador.persistencia.utilitarios.GenericoDAO;
 
 public class LocalizacaoDAO extends GenericoDAO<Localizacao>{
 

@@ -1,12 +1,12 @@
-package com.integrador.persistencia;
+package com.integrador.persistencia.utilitarios;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-import com.integrador.model.ChaveEstrangeira;
-import com.integrador.model.ChavePrimaria;
-import com.integrador.model.EntidadeBase;
-import com.integrador.model.Tabela;
+import com.integrador.model.annotations.ChaveEstrangeira;
+import com.integrador.model.annotations.ChavePrimaria;
+import com.integrador.model.annotations.Tabela;
+import com.integrador.model.utilitarios.EntidadeBase;
 
 
 public class Parser<T extends EntidadeBase> {

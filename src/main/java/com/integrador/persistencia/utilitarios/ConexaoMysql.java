@@ -1,4 +1,4 @@
-package com.integrador.persistencia;
+package com.integrador.persistencia.utilitarios;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

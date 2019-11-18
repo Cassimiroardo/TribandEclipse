@@ -1,6 +1,12 @@
-package com.integrador.model;
+package com.integrador.model.classes;
 
 import java.sql.Date;
+
+import com.integrador.model.annotations.Atributo;
+import com.integrador.model.annotations.ChaveEstrangeira;
+import com.integrador.model.annotations.ChavePrimaria;
+import com.integrador.model.annotations.Tabela;
+import com.integrador.model.utilitarios.EntidadeBase;
 @Tabela(nome="avaliacao_estudio")
 public class AvaliacaoEstudio extends EntidadeBase {
 	

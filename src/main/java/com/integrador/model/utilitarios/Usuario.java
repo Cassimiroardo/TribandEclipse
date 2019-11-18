@@ -1,4 +1,6 @@
-package com.integrador.model;
+package com.integrador.model.utilitarios;
+
+import com.integrador.model.classes.Foto;
 
 public interface Usuario{
 

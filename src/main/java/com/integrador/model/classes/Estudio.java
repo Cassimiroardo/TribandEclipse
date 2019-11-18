@@ -1,7 +1,14 @@
-package com.integrador.model;
+package com.integrador.model.classes;
 
 import java.sql.Date;
 import java.util.ArrayList;
+
+import com.integrador.model.annotations.Atributo;
+import com.integrador.model.annotations.ChaveEstrangeira;
+import com.integrador.model.annotations.ChavePrimaria;
+import com.integrador.model.annotations.Tabela;
+import com.integrador.model.utilitarios.EntidadeBase;
+import com.integrador.model.utilitarios.Usuario;
 @Tabela(nome="estudio")
 public class Estudio extends EntidadeBase implements Usuario {
 
@@ -136,9 +143,7 @@ public class Estudio extends EntidadeBase implements Usuario {
 	public ArrayList<Reserva> getReservas() {
 		return this.reservas;
 	}
-	public void setAgenda(ArrayList<Reserva> reservas) {
-		this.reservas = reservas;
-	}
+	
 	public String getTelefone() {
 		return telefone;
 	}

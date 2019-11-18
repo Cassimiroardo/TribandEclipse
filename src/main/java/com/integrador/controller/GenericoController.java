@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.integrador.model.EntidadeBase;
-import com.integrador.persistencia.GenericoDAO;
+import com.integrador.model.utilitarios.EntidadeBase;
+import com.integrador.persistencia.utilitarios.GenericoDAO;
 
 import java.util.List;
 

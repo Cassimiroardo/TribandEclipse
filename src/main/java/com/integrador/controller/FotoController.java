@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.integrador.model.Banda;
-import com.integrador.model.Estudio;
-import com.integrador.model.Foto;
-import com.integrador.model.Tabela;
-import com.integrador.model.Usuario;
+import com.integrador.model.annotations.Tabela;
+import com.integrador.model.classes.Banda;
+import com.integrador.model.classes.Estudio;
+import com.integrador.model.classes.Foto;
+import com.integrador.model.utilitarios.Usuario;
 import com.integrador.persistencia.BandaDAO;
 import com.integrador.persistencia.EstudioDAO;
 import com.integrador.persistencia.FotoDAO;

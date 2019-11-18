@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.integrador.model.Servico;
-import com.integrador.model.SubServico;
+import com.integrador.model.classes.Servico;
+import com.integrador.model.classes.SubServico;
 import com.integrador.persistencia.SubServicoDAO;
 
 @Controller

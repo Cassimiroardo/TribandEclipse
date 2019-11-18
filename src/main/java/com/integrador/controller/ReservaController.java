@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.integrador.model.Banda;
-import com.integrador.model.Estudio;
-import com.integrador.model.Reserva;
+import com.integrador.model.classes.Banda;
+import com.integrador.model.classes.Estudio;
+import com.integrador.model.classes.Reserva;
 import com.integrador.persistencia.ReservaDAO;
 
 @Controller

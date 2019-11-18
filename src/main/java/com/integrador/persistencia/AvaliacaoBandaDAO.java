@@ -2,8 +2,9 @@ package com.integrador.persistencia;
 
 import java.util.List;
 
-import com.integrador.model.AvaliacaoBanda;
-import com.integrador.model.Banda;
+import com.integrador.model.classes.AvaliacaoBanda;
+import com.integrador.model.classes.Banda;
+import com.integrador.persistencia.utilitarios.GenericoDAO;
 
 public class AvaliacaoBandaDAO extends GenericoDAO<AvaliacaoBanda>{
 

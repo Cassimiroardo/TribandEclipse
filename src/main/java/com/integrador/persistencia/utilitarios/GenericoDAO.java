@@ -1,4 +1,4 @@
-package com.integrador.persistencia;
+package com.integrador.persistencia.utilitarios;
 
 //Atualizar o Model com CHavePrimaria e Chave EStrangeira
 import java.lang.reflect.Field;
@@ -10,10 +10,10 @@ import java.util.List;
 
 import org.springframework.data.util.Pair;
 
-import com.integrador.model.Atributo;
-import com.integrador.model.ChavePrimaria;
-import com.integrador.model.EntidadeBase;
-import com.integrador.model.Tabela;
+import com.integrador.model.annotations.Atributo;
+import com.integrador.model.annotations.ChavePrimaria;
+import com.integrador.model.annotations.Tabela;
+import com.integrador.model.utilitarios.EntidadeBase;
 
 public abstract class GenericoDAO<T extends EntidadeBase> {
 

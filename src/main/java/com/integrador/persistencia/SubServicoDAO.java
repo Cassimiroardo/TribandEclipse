@@ -2,8 +2,9 @@ package com.integrador.persistencia;
 
 import java.util.List;
 
-import com.integrador.model.Servico;
-import com.integrador.model.SubServico;
+import com.integrador.model.classes.Servico;
+import com.integrador.model.classes.SubServico;
+import com.integrador.persistencia.utilitarios.GenericoDAO;
 
 public class SubServicoDAO extends GenericoDAO<SubServico>{
 

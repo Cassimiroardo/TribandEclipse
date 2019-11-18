@@ -3,7 +3,7 @@ package com.integrador.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.integrador.model.Localizacao;
+import com.integrador.model.classes.Localizacao;
 import com.integrador.persistencia.LocalizacaoDAO;
 
 @Controller

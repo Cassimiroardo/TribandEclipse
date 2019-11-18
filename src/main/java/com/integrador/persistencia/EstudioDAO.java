@@ -7,8 +7,9 @@ import java.util.function.Consumer;
 
 import org.springframework.data.util.Pair;
 
-import com.integrador.model.Estudio;
-import com.integrador.model.Localizacao;
+import com.integrador.model.classes.Estudio;
+import com.integrador.model.classes.Localizacao;
+import com.integrador.persistencia.utilitarios.GenericoDAO;
 
 public class EstudioDAO extends GenericoDAO<Estudio> {
 	public static final int ORDENAPORPRECO = 1;

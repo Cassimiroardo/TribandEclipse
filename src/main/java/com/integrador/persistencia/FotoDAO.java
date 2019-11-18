@@ -1,7 +1,8 @@
 package com.integrador.persistencia;
 
 
-import com.integrador.model.Foto;
+import com.integrador.model.classes.Foto;
+import com.integrador.persistencia.utilitarios.GenericoDAO;
 
 public class FotoDAO extends GenericoDAO<Foto> {
 

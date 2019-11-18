@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.integrador.model.Estudio;
-import com.integrador.model.Localizacao;
+import com.integrador.model.classes.Estudio;
+import com.integrador.model.classes.Localizacao;
 import com.integrador.persistencia.EstudioDAO;
 
 @Controller

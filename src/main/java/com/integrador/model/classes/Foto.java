@@ -1,4 +1,10 @@
-package com.integrador.model;
+package com.integrador.model.classes;
+
+import com.integrador.model.annotations.Atributo;
+import com.integrador.model.annotations.ChavePrimaria;
+import com.integrador.model.annotations.Tabela;
+import com.integrador.model.utilitarios.EntidadeBase;
+
 @Tabela(nome="foto")
 public class Foto extends EntidadeBase {
 
