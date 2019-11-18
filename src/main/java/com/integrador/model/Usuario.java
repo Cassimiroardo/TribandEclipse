@@ -15,4 +15,9 @@ public interface Usuario{
 	public String getSenha() ;
 
 	public void setSenha(String senha) ;
+	
+	
+
+	public abstract Foto getFotoPerfil();
+	public abstract void setFotoPerfil(Foto foto);
 }

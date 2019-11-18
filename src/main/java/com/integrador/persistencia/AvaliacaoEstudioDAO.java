@@ -13,6 +13,6 @@ public class AvaliacaoEstudioDAO extends GenericoDAO<AvaliacaoEstudio>{
 	}
 
 	public List<AvaliacaoEstudio> buscaPorEstudio(Estudio estudio){
-		return buscaPorAtributoUsandoId("estudio",estudio);
+		return buscarPorAtributoUsandoId("estudio",estudio);
 	}
 }

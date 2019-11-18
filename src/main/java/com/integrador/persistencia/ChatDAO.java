@@ -12,10 +12,10 @@ public class ChatDAO extends GenericoDAO<Chat>{
 		super(new Chat());
 		// TODO Auto-generated constructor stub
 	}
-	public List<Chat> buscaPorEstudio(Estudio estudio){
-		return buscaPorAtributoUsandoId("estudio",estudio);
+	public List<Chat> buscarPorEstudio(Estudio estudio){
+		return buscarPorAtributoUsandoId("estudio",estudio);
 	}
-	public List<Chat> buscaPorBanda(Banda banda){
-		return buscaPorAtributoUsandoId("banda",banda);
+	public List<Chat> buscarPorBanda(Banda banda){
+		return buscarPorAtributoUsandoId("banda",banda);
 	}
 }

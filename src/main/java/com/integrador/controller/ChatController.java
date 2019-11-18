@@ -23,11 +23,11 @@ public class ChatController extends GenericoController<Chat,ChatDAO>{
 		// TODO Auto-generated constructor stub
 	}
 	@GetMapping("/estudio/")
-	public ResponseEntity<List<Chat>> buscaPorEstudio(@RequestBody Estudio estudio){
-		return ResponseEntity.ok(t.buscaPorEstudio(estudio));
+	public ResponseEntity<List<Chat>> buscarPorEstudio(@RequestBody Estudio estudio){
+		return ResponseEntity.ok(t.buscarPorEstudio(estudio));
 	}
 	@GetMapping("/banda/")
-	public ResponseEntity<List<Chat>> buscaPorBanda(@RequestBody Banda banda){
-		return ResponseEntity.ok(t.buscaPorBanda(banda));
+	public ResponseEntity<List<Chat>> buscarPorBanda(@RequestBody Banda banda){
+		return ResponseEntity.ok(t.buscarPorBanda(banda));
 	}
 }

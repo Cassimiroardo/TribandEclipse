@@ -11,7 +11,7 @@ public class ServicoDAO extends GenericoDAO<Servico>{
 		super(new Servico());
 		// TODO Auto-generated constructor stub
 	}
-	public List<Servico> buscaPorEstudio(Estudio estudio){
-		return buscaPorAtributoUsandoId("estudio",estudio);
+	public List<Servico> buscarPorEstudio(Estudio estudio){
+		return buscarPorAtributoUsandoId("estudio",estudio);
 	}
 }

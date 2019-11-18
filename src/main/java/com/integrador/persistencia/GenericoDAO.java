@@ -41,7 +41,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 
 	}
 
-	private PreparedStatement adicionaAtributo(PreparedStatement statement, Object valor, int idx) {
+	private PreparedStatement adicionarAtributo(PreparedStatement statement, Object valor, int idx) {
 
 		try {
 
@@ -95,7 +95,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 
 			int tamanhoTabela = valores.size();
 			for (int i = 1; i <= tamanhoTabela; i++) {
-				statement = adicionaAtributo(statement, valores.get(i - 1), i);
+				statement = adicionarAtributo(statement, valores.get(i - 1), i);
 			}
 
 			statement.executeUpdate();
@@ -185,12 +185,12 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 
 					int indiceChaveNaQuery = valores.size();
 
-					statement = adicionaAtributo(statement, valor, indiceChaveNaQuery);
+					statement = adicionarAtributo(statement, valor, indiceChaveNaQuery);
 
 					continue;
 				}
 
-				statement = adicionaAtributo(statement, valor, idx++);
+				statement = adicionarAtributo(statement, valor, idx++);
 
 			}
 
@@ -207,13 +207,13 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 		return novo;
 	}
 
-	protected List<T> busca(String query, Object valor) {
+	protected List<T> buscar(String query, Object valor) {
 		// metodo de auxilio para pesquisar com somente um valor na query;
 		Object valores[] = { valor };
-		return busca(query, valores);
+		return buscar(query, valores);
 	}
 
-	protected List<T> busca(String query, Object valorEspecifico[]) {
+	protected List<T> buscar(String query, Object valorEspecifico[]) {
 		this.conexao.abrirConexao();
 		if (valorEspecifico != null)
 			if (valorEspecifico.length == 0)
@@ -236,7 +236,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 			if (query.length() > 0) {
 				int tam = valorEspecifico.length;
 				for (int i = 0; i < tam; i++) {
-					statement = adicionaAtributo(statement, valorEspecifico[i], i + 1);
+					statement = adicionarAtributo(statement, valorEspecifico[i], i + 1);
 				}
 			} // valores são adicionados na query, se for necessario
 
@@ -324,18 +324,18 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 	}
 
 	public List<T> buscarTodos() {
-		return busca("", null);
+		return buscar("", null);
 	}
 	
 	
-	protected T buscaUmPorAtributoUsandoSeusAtributos(String field, Object valor) {
-		List<T> ans = buscaPorAtributoUsandoSeusAtributos(field, valor);
+	protected T buscarUmPorAtributoUsandoSeusAtributos(String field, Object valor) {
+		List<T> ans = buscarPorAtributoUsandoSeusAtributos(field, valor);
 		if (ans.size() == 1)
 			return ans.get(0);
 		return null;
 	}
-	protected T buscaUmPorAtributosUsandoSeusAtributos(String[] fields, Object[] valores) {
-		List<T> ans = buscaPorAtributosUsandoSeusAtributos(fields, valores);
+	protected T buscarUmPorAtributosUsandoSeusAtributos(String[] fields, Object[] valores) {
+		List<T> ans = buscarPorAtributosUsandoSeusAtributos(fields, valores);
 		if(ans.size()==1)
 			return ans.get(0);
 		return null;
@@ -343,16 +343,16 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 	
 	public T buscarPorId(Long id) {
 		String nome = classeT.getSimpleName();
-		return buscaUmPorAtributoUsandoSeusAtributos("id" + nome, id);
+		return buscarUmPorAtributoUsandoSeusAtributos("id" + nome, id);
 	}
 
 
-	protected List<T> buscaPorAtributosUsandoSeusAtributos(String fields[], Object valores[]) {
+	protected List<T> buscarPorAtributosUsandoSeusAtributos(String fields[], Object valores[]) {
 		String query = "";
 		ArrayList<Object> valoresQuery = new ArrayList<Object>();
 		try {
 			for (int i = 0; i < fields.length; i++) {
-				Pair<String, List<Object>> novo = geraQuery(fields[i], valores[i], query, valoresQuery);
+				Pair<String, List<Object>> novo = gerarQuery(fields[i], valores[i], query, valoresQuery);
 				query = novo.getFirst();
 				valoresQuery = (ArrayList<Object>) novo.getSecond();
 			}
@@ -363,27 +363,26 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 		}
 		query = " WHERE "+ query;
 		
-		return busca(query, valoresQuery.toArray());
+		return buscar(query, valoresQuery.toArray());
 	}
 
-	protected List<T> buscaPorAtributoUsandoSeusAtributos(String field, Object valor) {
+	protected List<T> buscarPorAtributoUsandoSeusAtributos(String field, Object valor) {
 		String fields[] = { field };
 		Object valores[] = { valor };
-		return buscaPorAtributosUsandoSeusAtributos(fields, valores);
+		return buscarPorAtributosUsandoSeusAtributos(fields, valores);
 	}
 
 	
-	protected List<T> buscaPorAtributoUsandoId(String field, Object valor){
+	protected List<T> buscarPorAtributoUsandoId(String field, Object valor){
 		Class<?> classe = parser.geraAtributo(field).getType();
 		String nomeDaTabela = classe.getAnnotation(Tabela.class).nome();
 		String nomeAtributoId = nomeDaTabela+".id_"+nomeDaTabela;
 		
 		Long id = ((EntidadeBase)valor).getId();
-		System.out.println(nomeAtributoId +" -> "+id);
-		return busca(" WHERE "+nomeAtributoId +"=?",id);
+		return buscar(" WHERE "+nomeAtributoId +"=?",id);
 	}
 	
-	protected Pair<String, List<Object>> geraQuery(String nome, Object valor, String query, List<Object> valoresQuery) {
+	protected Pair<String, List<Object>> gerarQuery(String nome, Object valor, String query, List<Object> valoresQuery) {
 		try {
 			Field atributoQuery = parser.geraAtributo(nome);
 
@@ -401,6 +400,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 				ArrayList<String> nomeDosAtributos = new ArrayList<String>();
 
 				for (Field atributo : atributosDaQuery) {
+					atributo.setAccessible(true);
 					if (!atributo.isAnnotationPresent(Atributo.class)) {
 						atributo = null;
 						continue;
@@ -419,12 +419,13 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 					nomeDosAtributos.add(atributo.getAnnotation(Atributo.class).nome());
 					valores.add(valorAtributo);
 				}
+				String nomeTabelaEstrangeira = atributoQuery.getType().getAnnotation(Tabela.class).nome();
 				if(query.length()>0) query+=" AND ";
-				query += geraQuery((String[]) nomeDosAtributos.toArray()) + " ";
+				query += gerarQuery( nomeDosAtributos.toArray(new String[] {}),nomeTabelaEstrangeira) + " ";
 			} else {
 
 				if(query.length()>0) query+=" AND ";
-				query += geraQuery(atributoQuery.getAnnotation(Atributo.class).nome()) + " ";
+				query += gerarQuery(atributoQuery.getAnnotation(Atributo.class).nome(),nomeTabela) + " ";
 				valores.add(valor);
 			}
 			return Pair.of(query, valores);
@@ -438,14 +439,14 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 		return null;
 	}
 
-	protected String geraQuery(String nome) { // metodo de auxilio para faciliar o metodo gerarQuery quando se tem
+	protected String gerarQuery(String nome,String nomeTabela) { // metodo de auxilio para faciliar o metodo gerarQuery quando se tem
 												// somente
 												// um nome;
 		String vetor[] = { nome };
-		return geraQuery(vetor);
+		return gerarQuery(vetor,nomeTabela);
 	}
 
-	protected String geraQuery(String nomeAtributos[]) { // gera Query apartir de uma lista de nomes de atributos da
+	protected String gerarQuery(String nomeAtributos[],String nomeTabela) { // gera Query apartir de uma lista de nomes de atributos da
 															// tabela
 		int tamanho = nomeAtributos.length;
 

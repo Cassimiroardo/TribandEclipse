@@ -12,14 +12,14 @@ public class BandaDAO extends GenericoDAO<Banda>{
 	}
 
 	public Banda buscarPorEmail(String email) {
-		return buscaUmPorAtributoUsandoSeusAtributos("email",email);
+		return buscarUmPorAtributoUsandoSeusAtributos("email",email);
 	}
-	public List<Banda> buscaPorNome(String nome){
-		return buscaPorAtributoUsandoSeusAtributos("nome",nome);
+	public List<Banda> buscarPorNome(String nome){
+		return buscarPorAtributoUsandoSeusAtributos("nome",nome);
 	}
 
-	public Banda buscaPorEmailESenha(String email, String senha) {
-		return buscaUmPorAtributosUsandoSeusAtributos(new String[] {"email", "senha"}, new Object[] { email,senha} );
+	public Banda buscarPorEmailESenha(String email, String senha) {
+		return buscarUmPorAtributosUsandoSeusAtributos(new String[] {"email", "senha"}, new Object[] { email,senha} );
 	}
 	
 	

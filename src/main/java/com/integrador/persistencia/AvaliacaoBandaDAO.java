@@ -13,7 +13,7 @@ public class AvaliacaoBandaDAO extends GenericoDAO<AvaliacaoBanda>{
 	}
 	
 	public List<AvaliacaoBanda> buscaPorBanda(Banda banda){
-		return buscaPorAtributoUsandoId("banda",banda);
+		return buscarPorAtributoUsandoId("banda",banda);
 	}
 	
 	

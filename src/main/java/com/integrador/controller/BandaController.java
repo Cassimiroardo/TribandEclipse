@@ -25,12 +25,12 @@ public class BandaController extends GenericoController<Banda,BandaDAO>{
 		return ResponseEntity.ok(t.buscarPorEmail(email));
 	}
 	@GetMapping("/nome/{nome}")
-	public ResponseEntity<List<Banda>> buscaPorNome(@PathVariable String nome){
-		return ResponseEntity.ok(t.buscaPorNome(nome));
+	public ResponseEntity<List<Banda>> buscarPorNome(@PathVariable String nome){
+		return ResponseEntity.ok(t.buscarPorNome(nome));
 	}
 	@GetMapping("/login/{email}/{senha}")
-	public ResponseEntity<Banda> buscaPorEmailESenha(@PathVariable String email, @PathVariable String senha){
-		return ResponseEntity.ok(t.buscaPorEmailESenha(email, senha));
+	public ResponseEntity<Banda> buscarPorEmailESenha(@PathVariable String email, @PathVariable String senha){
+		return ResponseEntity.ok(t.buscarPorEmailESenha(email, senha));
 	}
 	
 }

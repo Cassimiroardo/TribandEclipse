@@ -11,8 +11,8 @@ public class MensagemDAO extends GenericoDAO<Mensagem>{
 		super(new Mensagem());
 		// TODO Auto-generated constructor stub
 	}
-	public List<Mensagem> buscaPorChat(Chat chat){
-		return buscaPorAtributoUsandoId("chat",chat);
+	public List<Mensagem> buscarPorChat(Chat chat){
+		return buscarPorAtributoUsandoId("chat",chat);
 	}
 
 }
