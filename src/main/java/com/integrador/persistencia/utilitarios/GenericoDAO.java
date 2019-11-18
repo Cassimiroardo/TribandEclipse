@@ -27,7 +27,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 	@SuppressWarnings("unchecked")
 	public GenericoDAO(T auxiliar) {
 		super();
-		this.conexao = new ConexaoMysql("localhost", "3306", "root", "BDcasa123", "triband");
+		this.conexao = new ConexaoMysql("localhost", "3306", "root", "dudu142414", "triband");
 		atributos = auxiliar.getClass().getDeclaredFields();
 		numeroAtributosClasse = atributos.length;
 
@@ -101,9 +101,9 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 			statement.executeUpdate();
 			ResultSet rs = statement.getGeneratedKeys();
 
-			if (rs.next())
+			if (rs.next()) {
 				t.setId(rs.getLong(1));
-
+			}
 		} catch (SQLException e) {
 			t = null;
 			e.printStackTrace();

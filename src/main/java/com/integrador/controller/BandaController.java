@@ -13,7 +13,7 @@ import com.integrador.persistencia.BandaDAO;
 
 @Controller
 @RequestMapping("/banda")
-public class BandaController extends GenericoController<Banda,BandaDAO>{
+public class BandaController extends GenericoController<Banda, BandaDAO> {
 
 	public BandaController() {
 		super(new BandaDAO());
@@ -22,15 +22,26 @@ public class BandaController extends GenericoController<Banda,BandaDAO>{
 
 	@GetMapping("/email/{email}")
 	public ResponseEntity<Banda> buscarPorEmail(@PathVariable String email) {
-		return ResponseEntity.ok(t.buscarPorEmail(email));
+		Banda p = t.buscarPorEmail(email);
+		if(p!=null)
+		return ResponseEntity.ok(p);
+		return ResponseEntity.notFound().build();
 	}
+
 	@GetMapping("/nome/{nome}")
-	public ResponseEntity<List<Banda>> buscarPorNome(@PathVariable String nome){
-		return ResponseEntity.ok(t.buscarPorNome(nome));
+	public ResponseEntity<List<Banda>> buscarPorNome(@PathVariable String nome) {
+		List<Banda> p = t.buscarPorNome(nome);
+		if(p!=null)
+		return ResponseEntity.ok(p);
+		return ResponseEntity.notFound().build();
 	}
+
 	@GetMapping("/login/{email}/{senha}")
-	public ResponseEntity<Banda> buscarPorEmailESenha(@PathVariable String email, @PathVariable String senha){
-		return ResponseEntity.ok(t.buscarPorEmailESenha(email, senha));
+	public ResponseEntity<Banda> buscarPorEmailESenha(@PathVariable String email, @PathVariable String senha) {
+		Banda p = super.t.buscarPorEmailESenha(email, senha);
+		if (p != null)
+			return ResponseEntity.ok(p);
+		return ResponseEntity.notFound().build();
 	}
-	
+
 }
