@@ -27,7 +27,7 @@ public abstract class GenericoDAO<T extends EntidadeBase> {
 	@SuppressWarnings("unchecked")
 	public GenericoDAO(T auxiliar) {
 		super();
-		this.conexao = new ConexaoMysql("localhost", "3306", "root", "dudu142414", "triband");
+		this.conexao = new ConexaoMysql("localhost", "3306", "root", "ifsul2017", "triband");
 		atributos = auxiliar.getClass().getDeclaredFields();
 		numeroAtributosClasse = atributos.length;
 

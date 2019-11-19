@@ -32,7 +32,7 @@ public class Reserva extends EntidadeBase{
 	@Atributo(nome="id_reserva",tipo=Long.class)
 	private Long idReserva;
 
-	@Atributo(nome="preco",tipo=Double.class)
+	@Atributo(nome="total_a_pagar",tipo=Double.class)
 	private Double preco;
 
 	public Reserva() {
